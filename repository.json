@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "category": "Other",
+    "description": "Allows to skip the authentification when a http header is provided. Only use this plugin if you know what you're doing.\n",
+    "guid": "d4866cb0-11fb-4f38-b1a5-1efbf870a94d",
+    "name": "HttpAuth",
+    "overview": "Authenticate users using HTTP Headers",
+    "owner": "UlysseM",
+    "versions": [
+      {
+        "changelog": "",
+        "checksum": "a91040dad693519a287e998e9d1d586b",
+        "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.0.0/httpauth_1.0.0.0.zip",
+        "targetAbi": "10.11.10.0",
+        "timestamp": "2026-06-05T06:36:21Z",
+        "version": "1.0.0"
+      }
+    ]
+  }
+]
