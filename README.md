@@ -15,6 +15,16 @@ You can then go to the configuration page to:
 - Update the header you with to use, for passing in the username (default being `X-Forwarded-User`).
 - Decide whether or not users that don't already exist gets to be admin or not upon creation.
 
+If you're using docker, you may need to grant write access to the index.html, to inject the javacsript. You will find something like this on your logs: `Access to the path '/jellyfin/jellyfin-web/index.html' is denied`.
+
+This can be achieved by adding the following to your docker compose file.
+```
+    post_start:
+      - command: chmod -c 666 /jellyfin/jellyfin-web/index.html
+        user: root
+        privileged: true
+```
+
 ## How it works
 
 This plugin is designed to be as small as possible, to be easily auditable. As such, while you can submit feature request, it's unlikely to be implemented.
