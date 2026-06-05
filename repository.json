@@ -8,12 +8,12 @@
     "owner": "UlysseM",
     "versions": [
       {
-        "changelog": "",
-        "checksum": "b2a9945fd3fcabb48b93ebf506c1d56d",
-        "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.0.2/httpauth_1.0.1.0.zip",
+        "changelog": "Better login page detection",
+        "checksum": "e1fcd59dc09f6c340cea765f8d98d379",
+        "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.0.2/httpauth_1.0.2.0.zip",
         "targetAbi": "10.11.10.0",
-        "timestamp": "2026-06-05T07:47:50Z",
-        "version": "1.0.1"
+        "timestamp": "2026-06-05T07:58:15Z",
+        "version": "1.0.2"
       },
       {
         "changelog": "I kickstarted this project with another plugin, and I forgot to cleanup that project's dependency.",
