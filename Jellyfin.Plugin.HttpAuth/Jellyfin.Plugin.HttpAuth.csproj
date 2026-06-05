@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>Jellyfin.Plugin.HttpAuth</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jellyfin.Controller" Version="10.*-*" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.11" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.11" />
+    <PackageReference Include="AnitomySharp.NET6" Version="0.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Configuration\configPage.html" />
+    <EmbeddedResource Include="Configuration\configPage.html" />
+    <None Remove="Configuration\injectAuth.js" />
+    <EmbeddedResource Include="Configuration\injectAuth.js" />
+  </ItemGroup>
+
+</Project>
