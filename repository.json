@@ -8,6 +8,14 @@
     "owner": "UlysseM",
     "versions": [
       {
+        "changelog": "I kickstarted this project with another plugin, and I forgot to cleanup that project's dependency.",
+        "checksum": "7e66a1fe9d8fee41a618e3826982077a",
+        "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.0.1/httpauth_1.0.1.0.zip",
+        "targetAbi": "10.11.10.0",
+        "timestamp": "2026-06-05T07:39:48Z",
+        "version": "1.0.1"
+      },
+      {
         "changelog": "",
         "checksum": "a91040dad693519a287e998e9d1d586b",
         "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.0.0/httpauth_1.0.0.0.zip",
