@@ -34,7 +34,7 @@ const attemptLogin = () => {
 listener = new MutationObserver(attemptLogin);
 
 const changeUrl = (url) => {
-    if (url.includes("web/#/login") || url.includes("web/?#/login")) {
+    if (url.includes("#/login")) {
         if (!attemptLogin()) {
             listener.disconnect();
             listener.observe(document.getElementById("reactRoot"), { attributes: true, childList: true, subtree: true });

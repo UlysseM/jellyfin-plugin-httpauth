@@ -25,6 +25,8 @@ This can be achieved by adding the following to your docker compose file.
         privileged: true
 ```
 
+You may need to refresh your cache (Ctrl + Shift + R) to have the auto-login system enabled.
+
 ## How it works
 
 This plugin is designed to be as small as possible, to be easily auditable. As such, while you can submit feature request, it's unlikely to be implemented.
