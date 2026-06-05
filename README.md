@@ -2,60 +2,73 @@
 
 ## About
 
-This plugins allows users to automatically login through a http header, which MUST be provided by a proxy.
+This plugins allows users to skip the login page (and not set password in jellyfin), provided your app is configured to use a reverse proxy that provides a username through an HTTP header.
 
-**Warning: This plugin will work great for those who knows exactly how to set up your environment, but if that's not you, you should certainly not use this plugin, as it would allow anyone to log in as admin on your jellyfin server.**
+**Warning: If you allow connections to your jellyfin without a reverse proxy, or if your reverse proxy doesn't override that header, this plugin is NOT for you, as it would allow anyone to log in as any other user, admin included.**
 
-## Getting started
+## Installation
 
-To install, add the package repo https://raw.githubusercontent.com/UlysseM/jellyfin-plugin-httpauth/gh-pages/repository.json to your repositories, then install the plugin from the plugin catalog!
+1. Modify your reverse proxy to provide a username through some HTTP Header of your choice (eg: `X-Forwarded-User`).
 
-You can then go to the configuration page to:
-- Turn the plugin on (yes, I added another check to make people think again before they use this plugin).
-- Update the header you with to use, for passing in the username (default being `X-Forwarded-User`).
-- Decide whether or not users that don't already exist gets to be admin or not upon creation.
-
-If you're using docker, you may need to grant write access to the index.html, to inject the javacsript. You will find something like this on your logs: `Access to the path '/jellyfin/jellyfin-web/index.html' is denied`.
-
-This can be achieved by adding the following to your docker compose file.
+2. (Optional) If you're using docker, and you want to skip the login screen, you will need to allow the app to modify your index.html at startup. This can be done by adding the following `post_start` in your docker compose file.
 ```
+services:
+  jellyfin:
+    # ... other config
+    # the next 4 lines needs to be added to your config.
     post_start:
       - command: chmod -c 666 /jellyfin/jellyfin-web/index.html
         user: root
         privileged: true
+    volumes:
+      # ... other config
 ```
 
-You may need to refresh your cache (Ctrl + Shift + R) to have the auto-login system enabled.
+3. Add the following repository to your jellyfin repositories: `https://raw.githubusercontent.com/UlysseM/jellyfin-plugin-httpauth/`, install the plugin from the catalog.
 
-## How it works
+4. After restarting jellyfin, head to the configuration page for the plugin, and check the box to enable the plugin. You may also decide whether you want non-existing users to be created as admin or not, and which HTTP Header you want the app to use (default being `X-Forwarded-User`).
 
-This plugin is designed to be as small as possible, to be easily auditable. As such, while you can submit feature request, it's unlikely to be implemented.
+5. You & all your users may need to refresh your cache (Ctrl + Shift + R) to have the updated index that injects the auto-login feature.
 
-- Using a IAuthenticationProvider, we will allow the login of the user specified by the http header `X-Forwarded-User` (configurable), if a manual login attempt is made with the user: `HttpAuth`, regardless of the password.
-- If that user doesn't exist, it will be created on the fly (with or without admin depending on the configuration).
-- The html file will be modified when the plugin start, to inject a javacsript file.
-- That javacript file will be served by the plugin itself. It contains enough logic to detect when the signing page is live, and auto-fills the field with the right user / password, before logging in.
+6. (Optional) In your "branding", you can mention something like "If you see this page, try Ctrl + Shift + R to login", or you can tell them to manually log in as user: "HttpHeader", password: *whatever they want to fill*. This will work as a backup in case the index.html didn't get modify.
 
+7. That's it! If you log out of your account, and gets redirected to the home page, you should be logged back in almost instantly.
+
+## How this plugin works
+
+- Whenever a manual login attempt is made with the user `HttpAuth`, regardless of the password, an IAuthenticationProvider implementation will log the user as whatever the http header `X-Forwarded-User` (configurable) is set to.  If that user doesn't exist, it will be automatically created (with or without admin permission depending on the configuration).
+- The html file will be modified when the plugin starts, to inject a javacsript file.
+- That javacript file will be served by the plugin itself. It contains enough logic to detect when the signing page is live, and auto-fills the field with the right user `HttpAuth`, some random password, before logging in.
+
+The design philosophy behind this plugin is to keep everything simple. The fact that I'm not exposing configuration to allow specific users to have specific permissions is not a missing feature; it's by design. I intend to make new release of this plugin only when necessary (eg: Jellyfin makes a breaking change to their codebase, or updates the web UI so the hook no longer works).
+
+The very small codebase also allows for easy audits, which should reassure folks interested in giving this plugin a go. 
 
 ## Why this plugin exist
 
-I originally started using the 9p4/jellyfin-plugin-sso. It works great (thanks!) but it had some flaws for my usecase:
-- It requires setting up providers
-- There is one more button to login
-- The codebase has dependency on various libraries, which recently got vulnerabilities. With that plugin being archived, receiving security fixes will become more challenging... Even though it doesn't really matter for my usecase, as jellyfin is hidden behind a http proxy.
+I originally started using the 9p4/jellyfin-plugin-sso. It worked great (thanks!) but it had some flaws for my usecase:
+- It required setting up providers.
+- There is one more button to login.
+- The codebase has dependency on various libraries, making it more likely to get hit by vulnerabilities. This is aggravated by the fact that the plugin will no longer be receiving updates.
 
-Which gets me to the point, the proxy can pass in a username as a header, and skip all of this complexity. There was another attempt on github made 4 years ago, but it never got anywhere, so I thought I'd make my own.
+Which gets me to the point, since reverse proxy can pass in username through headers, the extra complexity can be skipped.
 
-I haven't written c# in over 10 years, and it's my first time using .net; so things are probably not super pretty / standard / organized, but it's good enough for me.
+I also noticed there was some demand for such plugin; There was [an attempt](https://github.com/pikami/jellyfin-header-auth) at solving the same problem, but never worked and was abandoned, despite comment asking for status update.
+
+Anyhow, I made this plugin to answer my specific need, not to gain experience in c# / .net. Based on my lack of experience in this framework, my code (file structure & comment) may appear sloppy to some, but it's good enough for me.
 
 
-## Closing thoughts
+## I don't know much about HTTP Headers, how can I know more?
 
-Again, this plugin may work great for you if you know what you're doing, otherwise, I'd advise against it. The only safe way to use this plugin is to place it behind a http proxy, and ensure that you control how the header is set.
+The TLDR is you can use reverse proxy like NGINX to authentificate the user through some 3rd party mechanism, and have nginx extract the username from it. You should then be able to write the username through a custom HTTP Header.
 
-My custom setup uses nginx as a proxy to hide jellyfin from to the public internet, with 3 authentification mechanism. Each is able to provide me with a username, that I can use to pass in as the http header to log in:
-- `proxy_pass`, through keycloak/oauth2 proxy, I'm able to capture the username through `$upstream_http_x_auth_request_preferred_username`.
-- `mtls`, through `$ssl_client_s_dn_cn`.
-- `wireguard`, each client has its dedicated ip, and I'm using `geo` to map specific IPs to username.
+For instance, my custom setup hides jellyfin from the public internet, and I can access my jellyfin instance through:
+- `mtls`, configured at the nginx level, which requires some setup and downloading certificate onto my devices. The username can then be obtained through `$ssl_client_s_dn_cn`.
+- `proxy_pass`, using keycloak/oauth2 proxy, I'm able to capture the username through `$upstream_http_x_auth_request_preferred_username`.
+- `wireguard`, my configuration assigns each user to a specific IP address on my server, and I'm using nginx `geo` to map specific IPs to username.
 
-I also made sure to block any traffic that wasn't going through nginx.
+Lastly, you also want to make sure to block any other traffic that didn't originate from your reverse proxy, or anyone able to reach your instance without it could provide their own HTTP Header.
+
+## Special thanks
+
+I picked some ideas from the following jellyfin plugins: jellyfin/jellyfin-plugin-anilist, 9p4/jellyfin-plugin-sso and n00bcodr/Jellyfin-JavaScript-Injector.
