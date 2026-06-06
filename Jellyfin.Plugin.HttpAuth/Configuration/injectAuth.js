@@ -51,7 +51,7 @@ const setupCallback = async () => {
         }
         const data = await resp.json();
         if (data.Username.length > 1) {
-            window.httpAuthUserLogin = data;
+            window.httpAuthUserLogin = data.Username;
             if (data.Enabled) {
                 // We got a username and the plugin is enabled, so we can add the hook that logs us in automatically.
                 navigation.addEventListener("navigate", (event) => {

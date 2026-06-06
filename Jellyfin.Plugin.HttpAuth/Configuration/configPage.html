@@ -57,11 +57,10 @@
                             if (config.BreakerTripped) {
                                 document.getElementById('breaker-has-tripped').style = '';
                             }
-                            console.log("Loading page with", window.httpAuthUserLogin)
                             if (window.httpAuthUserLogin === false) {
                                 document.getElementById('current-http-header-pointer').textContent = 'No username were provided for the header `' + config.UserHeader + '`.';
                             } else if (typeof window.httpAuthUserLogin === 'string') {
-                                document.getElementById('current-http-header-pointer').textContent = document.getElementById('current-http-header-pointer').textContent = 'The username `' + window.httpAuthUserLogin + '` was provided by the header `' + config.UserHeader + '`.';
+                                document.getElementById('current-http-header-pointer').textContent = 'The username `' + window.httpAuthUserLogin + '` was provided by the header `' + config.UserHeader + '`.';
                             }
 
                             document.getElementById('userHeader').value = config.UserHeader;
