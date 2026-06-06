@@ -9,10 +9,10 @@
     "versions": [
       {
         "changelog": "Added safety breaker / added better tooling in the configuration page.\r\n\r\nA new feature has been added to the plugin: safety breaker. When the server serves traffic without the correct HTTP Header, it will trip (if the safety breaker is enabled) and disable the plugin. This is intended to catch misconfiguration that could result in people gaining access to the server.\r\nNote that when the breaker trip, it will be visible in the configuration page.\r\n\r\nAlso, the configuration page now shows up which user is currently logged in with the header that was last saved, this should help with debugging.\r\nAlternatively, if the javascript wasn't injected in the index.html page, it will display a corresponding message.",
-        "checksum": "a4847d725f1f4db498ed9c62ef42f451",
+        "checksum": "32ce67dc74559c3481bd6ace2b9dde07",
         "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.1.1/httpauth_1.1.1.0.zip",
         "targetAbi": "10.11.10.0",
-        "timestamp": "2026-06-06T22:27:40Z",
+        "timestamp": "2026-06-06T22:33:07Z",
         "version": "1.1.1"
       },
       {
