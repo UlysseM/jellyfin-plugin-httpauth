@@ -1,9 +1,13 @@
 using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
+using Jellyfin.Database.Implementations.Entities.Libraries;
+using Jellyfin.Plugin.HttpAuth.Configuration;
+using MediaBrowser.Common;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Net;
 using MediaBrowser.Controller.Session;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,8 +19,7 @@ namespace Jellyfin.Plugin.HttpAuth
     public class InjectAuthController : ControllerBase
     {
         static public string BlockToInject => "<script src=\"/InjectAuth/script.js\" defer></script>";
-
-        public InjectAuthController() {}
+        private static PluginConfiguration Config { get { return Plugin.Instance.Configuration; } }
 
         [HttpGet("script.js")]
         public ActionResult Login()
@@ -24,6 +27,24 @@ namespace Jellyfin.Plugin.HttpAuth
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(string.Format(CultureInfo.InvariantCulture, "{0}.Configuration.injectAuth.js", GetType().Namespace));
             return File(stream, "text/javascript");
+        }
+
+        [HttpGet("auth_data")]
+        public IActionResult IsEnabled()
+        {
+            bool enabled = Config.EnablePlugin;
+            string username = HttpAuthProvider.GetUsernameFromRequest(Request) ?? "";
+            if (enabled && username == "" && Config.EnableSafetyBreaker)
+            {
+                // The safety breaker was enabled, and we didn't notice any connection coming in, so we'll trip it.
+                Plugin.Instance.TripSafetyMechanism();
+                enabled = false;
+            }
+            return Ok(new
+            {
+                Enabled = enabled,
+                Username = username,
+            });
         }
     }
 

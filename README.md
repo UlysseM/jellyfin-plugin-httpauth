@@ -38,7 +38,8 @@ services:
 
 - Whenever a manual login attempt is made with the user `HttpAuth`, regardless of the password, an IAuthenticationProvider implementation will log the user as whatever the http header `X-Forwarded-User` (configurable) is set to.  If that user doesn't exist, it will be automatically created (with or without admin permission depending on the configuration).
 - The html file will be modified when the plugin starts, to inject a javacsript file.
-- That javacript file will be served by the plugin itself. It contains enough logic to detect when the signing page is live, and auto-fills the field with the right user `HttpAuth`, some random password, before logging in.
+- That javacript file will be served by the plugin itself does few things. On startup, it checks whether the plugin is active and if the http header is provided (by making an API call). If everything looks, it will auto-fill the login path with the right user `HttpAuth`, some random password, before logging in.
+- The HTTP endpoint used to return the name of the header is intended to be call each time the page loads, and if it sees that no HTTP header are set, it will "trip a breaker", disabling the plugin. This is a safety feature, so that in case of misconfiguration, login through this endpoint are automatically disabled. This "safety breaker" can also be turned off in the configuration.
 
 The design philosophy behind this plugin is to keep everything simple. The fact that I'm not exposing configuration to allow specific users to have specific permissions is not a missing feature; it's by design. I intend to make new release of this plugin only when necessary (eg: Jellyfin makes a breaking change to their codebase, or updates the web UI so the hook no longer works).
 

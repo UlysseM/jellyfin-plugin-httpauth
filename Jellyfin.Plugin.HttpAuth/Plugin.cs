@@ -29,6 +29,14 @@ namespace Jellyfin.Plugin.HttpAuth
             InjectToIndex();
         }
 
+        public void TripSafetyMechanism()
+        {
+            _logger.LogError("A request came to the server without having the header {UserHeader} set. Since the SafetyBreaker is enabled, we'll trip it by disabling the plugin.", Configuration.UserHeader);
+            Configuration.EnablePlugin = false;
+            Configuration.BreakerTripped = true;
+            UpdateConfiguration(Configuration);
+        }
+
         // Inspired by n00bcodr's Jellyfin-JavaScript-Injector.
         void InjectToIndex()
         {

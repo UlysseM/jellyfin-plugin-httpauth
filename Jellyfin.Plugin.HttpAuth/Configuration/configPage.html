@@ -11,14 +11,23 @@
                 <div class="content-primary">
                     <form id="httpAuthConfigurationForm">
                         <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label class="emby-checkbox-label">
+                            <label class="emby-checkbox-label" style="height:auto">
                                 <input id="chkEnablePlugin" name="chkEnablePlugin" type="checkbox" is="emby-checkbox" />
-                                <span>Enable this plugin. By doing so, you acknowledge that your jellyfin instance will be vulnerable to anyone logging as an admin, unless you take the proper precaution with an proxy, and you know what you're doing.</span>
+                                <span>Enable this plugin. <b>Please confirm that you know what you're doing (eg: always using a reverse proxy to reach the app), not doing so would allow anyone to login, even as admin (as they could log in as you).</b></span>
                             </label>
                         </div>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label class="emby-checkbox-label" style="height:auto">
+                                <input id="chkEnableSafetyBreaker" name="chkEnableSafetyBreaker" type="checkbox" is="emby-checkbox" />
+                                <span>Enable safety breaker (on by default). If enabled, the plugin will disable itself if it detects a client connecting to it without the correct HTTP header, which would highlight an issue in your configuration. Turning it on may result in downtime (as users may not be able to log in without a password), but may prevent potential attacks.<br/>The only legimilate reason to disable is if you need to bypass the http proxy and use other authentification mechanism, but anyone able to reach it will still be able to escalate to an admin account.</span>
+                            </label>
+                        </div>
+                        <div id="breaker-has-tripped" style="display:none;"><b style="background: #ff2; color:red; display:block; font-size: 1.5em">⚠️ If you're seeing this message, the breaker has tripped! You should check your configuration before re-enabling the plugin.</b></div>
                         <div class="inputContainer">
-                            <input is="emby-input" id="userHeader" label="HTTP Header containing user info" />
-                            <div class="fieldDescription">HTTP Header containing user info.</div>
+                            <input is="emby-input" id="userHeader"  name="httpUserHeader" label="HTTP Header containing user info" autocomplete="off" style="height:auto"/>
+                            <div class="fieldDescription">This is the name of the HTTP Header your reverse proxy must provide the username in.<br/>
+                            <b id="current-http-header-pointer">It doesn't appear that the plugin was able to inject the script in "index.html", try to refresh your cache, or follow up <a href="https://github.com/UlysseM/jellyfin-plugin-httpauth">the installation instructions</a></b>
+                            </div>
                         </div>
                         <div class="checkboxContainer checkboxContainer-withDescription">
                             <label class="emby-checkbox-label">
@@ -44,6 +53,17 @@
 
                         ApiClient.getPluginConfiguration(HttpAuthConfigurationPage.pluginUniqueId).then(function (config) {
                             document.getElementById('chkEnablePlugin').checked = config.EnablePlugin;
+                            document.getElementById('chkEnableSafetyBreaker').checked = config.EnableSafetyBreaker;
+                            if (config.BreakerTripped) {
+                                document.getElementById('breaker-has-tripped').style = '';
+                            }
+                            console.log("Loading page with", window.httpAuthUserLogin)
+                            if (window.httpAuthUserLogin === false) {
+                                document.getElementById('current-http-header-pointer').textContent = 'No username were provided for the header `' + config.UserHeader + '`.';
+                            } else if (typeof window.httpAuthUserLogin === 'string') {
+                                document.getElementById('current-http-header-pointer').textContent = document.getElementById('current-http-header-pointer').textContent = 'The username `' + window.httpAuthUserLogin + '` was provided by the header `' + config.UserHeader + '`.';
+                            }
+
                             document.getElementById('userHeader').value = config.UserHeader;
                             document.getElementById('chkNewUsersAreAdmin').checked = config.NewUsersAreAdmin;
                             Dashboard.hideLoadingMsg();
@@ -55,11 +75,18 @@
 
                         ApiClient.getPluginConfiguration(HttpAuthConfigurationPage.pluginUniqueId).then(function (config) {
                             config.EnablePlugin = document.getElementById('chkEnablePlugin').checked;
+                            config.EnableSafetyBreaker = document.getElementById('chkEnableSafetyBreaker').checked;
+                            if (config.EnablePlugin) {
+                                config.BreakerTripped = false;
+                                document.getElementById('breaker-has-tripped').style = 'display:none';
+                            }
                             config.UserHeader = document.getElementById('userHeader').value;
                             config.NewUsersAreAdmin = document.getElementById('chkNewUsersAreAdmin').checked;
 
                             ApiClient.updatePluginConfiguration(HttpAuthConfigurationPage.pluginUniqueId, config).then(function (result) {
                                 Dashboard.processPluginConfigurationUpdateResult(result);
+                                // Reload to refresh all the data.
+                                window.location.reload();
                             });
                         });
                     },

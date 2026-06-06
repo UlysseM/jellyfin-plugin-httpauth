@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Jellyfin.Data;
 using Jellyfin.Database.Implementations.Entities;
@@ -33,6 +34,17 @@ namespace Jellyfin.Plugin.HttpAuth
 
         public bool IsEnabled { get { return Config.EnablePlugin; } }
 
+
+
+        static public string GetUsernameFromRequest(HttpRequest httpReq)
+        {
+            if (!httpReq.Headers.TryGetValue(Config.UserHeader, out var users) || users.Count != 1)
+            {
+                return null;
+            }
+            return users[0];
+        }
+
         public async Task<ProviderAuthenticationResult> Authenticate(string username, string password)
         {
             // We only do this if the username is set to HttpAuth.
@@ -45,12 +57,12 @@ namespace Jellyfin.Plugin.HttpAuth
                 _logger.LogError("Plugin not enabled. You need to explicitly enable the plugin.");
                 throw new AuthenticationException("Plugin not enabled");
             }
-            if (!_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(Config.UserHeader, out var users) || users.Count != 1)
-            {
+            string user = GetUsernameFromRequest(_httpContextAccessor.HttpContext.Request);
+            if (user == null) {
                 _logger.LogInformation("Header {UserHeader} was not provided.", Config.UserHeader);
                 throw new AuthenticationException($"Header {Config.UserHeader} was not provided.");
             }
-            return await DoAuthentification(users[0]);
+            return await DoAuthentification(user);
         }
 
         private async Task<ProviderAuthenticationResult> DoAuthentification(string actualUsername)
