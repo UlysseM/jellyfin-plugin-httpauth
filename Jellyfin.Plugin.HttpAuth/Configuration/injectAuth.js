@@ -44,12 +44,14 @@ const changeUrl = (url) => {
 
 
 const setupCallback = async () => {
+    let printError = false;
     try {
         const resp = await fetch('/injectauth/auth_data');
         if (!resp.ok) {
             throw new Error(`HTTP error! Status: ${resp.status}`);
         }
         const data = await resp.json();
+        printError = data.BreakerTripped;
         if (data.Username.length > 1) {
             window.httpAuthUserLogin = data.Username;
             if (data.Enabled) {
@@ -59,17 +61,26 @@ const setupCallback = async () => {
                 });
                 changeUrl(window.location.href);
             } else {
-                throw new Error("The http auth plugin is disabled. An admin could turn it back in the configuration. The HTTP header works, providing the username:", data.Username);
+                printError = true;
+                throw new Error("The http auth plugin is disabled. An admin could turn it back in the configuration. The HTTP header works, providing the username: " + data.Username);
             }
         } else {
             window.httpAuthUserLogin = false;
             if (data.Enabled) {
-                throw new Error("The http auth plugin is enabled, but the HTTP header was not set. This is not secure. This message keeps appearing while the safety breaker is off.");
+                throw new Error("The http auth plugin is enabled, but the HTTP header was not set. This is not secure. This message keeps appearing while the safety breaker is off");
             } else {
-                throw new Error("The http auth plugin is disabled, and no HTTP headers were provided. An admin should investigate the reverse proxy not sending the correct HTTP header.");
+                throw new Error("The http auth plugin is disabled, and no HTTP headers were provided. An admin should investigate the reverse proxy not sending the correct HTTP header");
             }
         }
     } catch (error) {
+        if (printError) {
+            // Add an ugly warning.
+            const newDiv = document.createElement("div");
+            newDiv.textContent = "⚠️" + err + ". Click to hide message.";
+            newDiv.style = "position: absolute; background: white; text-size: 3em; width: 100%; z-index: 100000; color: red; padding: 1em; font-weight: bold;";
+            newDiv.onclick = () => { newDiv.remove(); };
+            document.getElementById("reactRoot").before(newDiv);
+        }
         console.error("Error with HTTP Auth plugin:", error)
     }
 }

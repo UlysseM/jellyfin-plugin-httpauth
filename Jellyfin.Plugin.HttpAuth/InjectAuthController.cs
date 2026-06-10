@@ -26,6 +26,10 @@ namespace Jellyfin.Plugin.HttpAuth
         {
             var assembly = Assembly.GetExecutingAssembly();
             var stream = assembly.GetManifestResourceStream(string.Format(CultureInfo.InvariantCulture, "{0}.Configuration.injectAuth.js", GetType().Namespace));
+            if (stream == null)
+            {
+                return NotFound();
+            }
             return File(stream, "text/javascript");
         }
 
@@ -44,6 +48,7 @@ namespace Jellyfin.Plugin.HttpAuth
             {
                 Enabled = enabled,
                 Username = username,
+                Config.BreakerTripped,
             });
         }
     }
