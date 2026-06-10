@@ -87,7 +87,8 @@ namespace Jellyfin.Plugin.HttpAuth
 
         public Task ChangePassword(User user, string newPassword)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("ChangePassword is not supported for HttpAuth users — passwords are managed by the reverse proxy.");
+            return Task.CompletedTask;
         }
 
         public bool HasPassword(User user)
