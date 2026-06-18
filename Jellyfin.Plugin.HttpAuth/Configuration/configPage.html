@@ -19,7 +19,9 @@
                         <div class="checkboxContainer checkboxContainer-withDescription">
                             <label class="emby-checkbox-label" style="height:auto">
                                 <input id="chkEnableSafetyBreaker" name="chkEnableSafetyBreaker" type="checkbox" is="emby-checkbox" />
-                                <span>Enable safety breaker (on by default). If enabled, the plugin will disable itself if it detects a client connecting to it without the correct HTTP header, which would highlight an issue in your configuration. Turning it on may result in downtime (as users may not be able to log in without a password), but may prevent potential attacks.<br/>The only legimilate reason to disable is if you need to bypass the http proxy and use other authentification mechanism, but anyone able to reach it will still be able to escalate to an admin account.</span>
+                                <span><b>Enable safety breaker (on by default).</b> If enabled, the plugin will disable itself if it detects a client connecting to it without the correct HTTP header, which would highlight an issue in your configuration.<br/>
+                                Leaving this feature on could result in downtime (as users may not be able to log in without a password), but may prevent potential attacks.<br/>
+                                <b>The only legitimate reason to flip turn off this flag is if you want/need user to access your jellyfin instance without reverse proxy</b>, understand that any user that has the potential to bypass the reverse proxy will be able to log in as any user (including admin accounts).</span>
                             </label>
                         </div>
                         <div id="breaker-has-tripped" style="display:none;"><b style="background: #ff2; color:red; display:block; font-size: 1.5em">⚠️ If you're seeing this message, the breaker has tripped! You should check your configuration before re-enabling the plugin.</b></div>

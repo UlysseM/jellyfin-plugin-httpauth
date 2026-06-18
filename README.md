@@ -24,9 +24,11 @@ services:
       # ... other config
 ```
 
-3. Add the following repository to your jellyfin repositories: `https://raw.githubusercontent.com/UlysseM/jellyfin-plugin-httpauth/`, install the plugin from the catalog.
+> Note: The path `/jellyfin/jellyfin-web/index.html` is the path for the official docker image `/jellyfin/jellyfin`. This path may differ based on your image. You can find the path by running a command similar to this `docker exec -it jellyfin find / | grep /index.html` (adjust your container name as needed).
 
-4. After restarting jellyfin, head to the configuration page for the plugin, and check the box to enable the plugin. You may also decide whether you want non-existing users to be created as admin or not, and which HTTP Header you want the app to use (default being `X-Forwarded-User`).
+3. Add the following repository to your jellyfin repositories: `https://raw.githubusercontent.com/UlysseM/jellyfin-plugin-httpauth/gh-pages/repository.json`, install the plugin from the catalog.
+
+4. After restarting jellyfin, head to the configuration page for the plugin, and check the box to enable the plugin. You may also decide whether you want non-existing users to be created as admin or not, and which HTTP Header you want the app to use (default being `X-Forwarded-User`). While you're on that configuration page, pay attention to the "safety breaker" description. Having the safety-breaker on will turn the plugin off if the server ever receives a connection without authentification headers.
 
 5. You & all your users may need to refresh your cache (Ctrl + Shift + R) to have the updated index that injects the auto-login feature.
 

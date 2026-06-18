@@ -46,7 +46,7 @@ const changeUrl = (url) => {
 const setupCallback = async () => {
     let printError = false;
     try {
-        const resp = await fetch('/injectauth/auth_data');
+        const resp = await fetch('/InjectAuth/auth_data');
         if (!resp.ok) {
             throw new Error(`HTTP error! Status: ${resp.status}`);
         }
