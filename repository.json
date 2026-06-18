@@ -8,6 +8,14 @@
     "owner": "UlysseM",
     "versions": [
       {
+        "changelog": "Updated wording in the configuration path, the injected script now calls the path /InjectAuth/.",
+        "checksum": "9b4d20523b12c779e4d7c99c6478913d",
+        "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.1.3/httpauth_1.1.3.0.zip",
+        "targetAbi": "10.11.10.0",
+        "timestamp": "2026-06-18T01:41:03Z",
+        "version": "1.1.3"
+      },
+      {
         "changelog": "Added a visible warning on the website, when the plugin is disabled.",
         "checksum": "3b55a2027e19706bcd06ca1d701da2f4",
         "sourceUrl": "https://github.com/UlysseM/jellyfin-plugin-httpauth/releases/download/1.1.2/httpauth_1.1.2.0.zip",
