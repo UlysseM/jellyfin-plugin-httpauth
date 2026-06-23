@@ -67,7 +67,7 @@ The TLDR is you can use reverse proxy like NGINX to authentificate the user thro
 
 For instance, my custom setup hides jellyfin from the public internet, and I can access my jellyfin instance through:
 - `mtls`, configured at the nginx level, which requires some setup and downloading certificate onto my devices. The username can then be obtained through `$ssl_client_s_dn_cn`.
-- `proxy_pass`, using keycloak/oauth2 proxy, I'm able to capture the username through `$upstream_http_x_auth_request_preferred_username`.
+- `auth_request`, using keycloak/oauth2 proxy, I'm able to capture the username through `$upstream_http_x_auth_request_preferred_username`.
 - `wireguard`, my configuration assigns each user to a specific IP address on my server, and I'm using nginx `geo` to map specific IPs to username.
 
 Lastly, you also want to make sure to block any other traffic that didn't originate from your reverse proxy, or anyone able to reach your instance without it could provide their own HTTP Header.
